@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { HttpError } from "./errors";
 import { sendDataRequest } from "./http";
 
 describe("sendDataRequest()", () => {
@@ -28,9 +29,6 @@ describe("sendDataRequest()", () => {
 
   it("should convert the provied data to JSON before sending the request", async () => {
     const testData = { key: "test" };
-    // return expect(sendDataRequest(testData)).not.rejects.toBe(
-    //   "data is not a string"
-    // );
     let errorMessage;
     try {
       await sendDataRequest(testData);
@@ -39,5 +37,24 @@ describe("sendDataRequest()", () => {
     }
 
     expect(errorMessage).not.toBe("data is not a string");
+  });
+
+  it("should throw an HttpError in case of non-ok responses", () => {
+    testFectch.mockImplementationOnce((url, options) => {
+      return new Promise((resolve, reject) => {
+        const testResponse = {
+          ok: false,
+          json() {
+            return new Promise((resolve, reject) => {
+              resolve(testResponseData);
+            });
+          },
+        };
+        resolve(testResponse);
+      });
+    });
+    const testData = { key: "test" };
+
+    return expect(sendDataRequest(testData)).rejects.toBeInstanceOf(HttpError);
   });
 });
