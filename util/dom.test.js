@@ -1,4 +1,4 @@
-import { expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import fs from "fs";
 import path from "path";
@@ -12,15 +12,26 @@ const htmlDocumentContent = fs.readFileSync(htmlDocPath).toString();
 
 const window = new Window();
 const document = window.document;
-document.write(htmlDocumentContent);
-
 vi.stubGlobal("document", document);
 
-it("should add an error paragraph to the id='error' element", () => {
-  showError("test");
+describe("showError()", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    document.write(htmlDocumentContent);
+  });
+  it("should add an error paragraph to the id='error' element", () => {
+    showError("test");
 
-  const errorsEl = document.getElementById("errors");
-  const errorParagraph = errorsEl.firstElementChild;
+    const errorsEl = document.getElementById("errors");
+    const errorParagraph = errorsEl.firstElementChild;
 
-  expect(errorParagraph).not.toBeNull();
+    expect(errorParagraph).not.toBeNull();
+  });
+
+  it("should not contain an error paragraph initially", () => {
+    const errorsEl = document.getElementById("errors");
+    const errorParagraph = errorsEl.firstElementChild;
+
+    expect(errorParagraph).toBeNull();
+  });
 });
