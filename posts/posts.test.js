@@ -21,7 +21,7 @@ describe("extractPostData()", () => {
     expect(data.content).toBe(testContent);
   });
 
-  it.only("should throw an error when no title and content is provided", () => {
+  it("should throw an error when no title and content is provided", () => {
     testFormData = {
       title: null,
       content: null,
